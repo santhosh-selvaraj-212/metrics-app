@@ -15,7 +15,7 @@ const dbPath = "../db/metrics.db"
 
 func main() {
 
-	util.CheckAndCreateLogFolder("./db")
+	util.CheckAndCreateLogFolder("../db")
 
 	sqliteStore := repository.NewSQLiteStore(dbPath)
 	if err := sqliteStore.Init(); err != nil {

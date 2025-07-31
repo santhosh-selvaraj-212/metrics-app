@@ -21,7 +21,6 @@ goto :eof
 
 :build
 if not exist %BUILD_DIR% mkdir %BUILD_DIR%
-REM 
 echo Building metrics-api.exe...
 go build -ldflags="-s -w" -o %BUILD_DIR%\metrics-api.exe .\cmd\api
 if %errorlevel% neq 0 (
@@ -46,18 +45,18 @@ echo Clean complete.
 goto :eof
 
 :run
-if "%2"=="" (
-    echo ERROR: "run" command requires an argument: api or ingest
-    goto help
-)
+REM Default to "api" if no second argument is provided
+set SERVICE=%2
+if "%SERVICE%"=="" set SERVICE=api
+
 call :build
 
 pushd %BUILD_DIR%
 
-if "%2"=="api" (
+if "%SERVICE%"=="api" (
     echo Running metrics-api.exe from %CD%...
     metrics-api.exe
-) else if "%2"=="ingest" (
+) else if "%SERVICE%"=="ingest" (
     echo Running metrics-ingest.exe from %CD%...
     metrics-ingest.exe
 ) else (
@@ -68,6 +67,7 @@ if "%2"=="api" (
 
 popd
 goto :eof
+
 
 :test
 echo Running tests with race detector and coverage...

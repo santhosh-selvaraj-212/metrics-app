@@ -43,7 +43,7 @@ func main() {
 		return
 	}
 
-	util.CheckAndCreateLogFolder("./db")
+	util.CheckAndCreateLogFolder("../db")
 
 	storageType := "sqlite" // Or "inmemory"
 
