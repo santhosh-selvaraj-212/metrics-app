@@ -8,11 +8,14 @@ import (
 
 	"metrics-app/internal/domain"
 	"metrics-app/internal/repository"
+	"metrics-app/internal/util"
 )
 
 const dbPath = "../db/metrics.db"
 
 func main() {
+
+	util.CheckAndCreateLogFolder("./db")
 
 	sqliteStore := repository.NewSQLiteStore(dbPath)
 	if err := sqliteStore.Init(); err != nil {

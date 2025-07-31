@@ -43,6 +43,8 @@ func main() {
 		return
 	}
 
+	util.CheckAndCreateLogFolder("./db")
+
 	storageType := "sqlite" // Or "inmemory"
 
 	var metricStore domain.MetricStore
