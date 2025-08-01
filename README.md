@@ -1,82 +1,86 @@
-#Metrics App API
+# 📊 Metrics App API
 
-#Overview
+## 🚀 Overview
+The **Metrics App** is a Go-based service for collecting, storing, and retrieving system metrics such as CPU load and concurrency. It provides a clean API suitable for integration with monitoring agents.
 
-The metrics-app is a Go-based service designed to collect, store, and retrieve system metrics such as CPU load and concurrency. It provides a simple API that can be integrated with monitoring agents to record data over time and retrieve it for analysis. The application supports two storage backends: an in-memory store for quick prototyping and a persistent SQLite database for production use.
+This application uses a **persistent SQLite database** as its storage backend—ideal for production environments and long-term analysis.
 
-#Data Model
+---
 
-The primary data entity in this application is the Metric struct, which represents a single data point recorded at a specific moment in time.
+## 🧬 Data Model
 
--Timestamp: A Unix timestamp (in seconds) indicating when the reading was taken.
+The primary data structure is `Metric`, which represents a snapshot in time:
 
--CPULoad: A floating-point value representing the CPU load at the time of the reading.
+| Field        | Type      | Description                                     |
+|--------------|-----------|-------------------------------------------------|
+| `timestamp`  | `int64`   | Unix timestamp (in seconds)                     |
+| `cpu_load`   | `float64` | CPU load at the time of recording               |
+| `concurrency`| `int`     | Number of concurrent processes or requests      |
 
--Concurrency: An integer value representing the number of concurrent processes or requests.
+---
 
-#Store Metric
+## 📥 Store Metric
 
-#Ingest Process
+### 🔁 Ingest Process
+The app automatically stores the last 5 minutes of metric readings to ensure fresh and consistent data is maintained.
 
-The metrics-app is designed to ingest and store metrics data. The ingest process automatically inserts the last 5 minutes of readings, ensuring a consistent and recent data set is maintained
-
-timestamp: An integer Unix timestamp, e.g., 1722441990.
-
-cpu_load: A float value, e.g., 45.75.
-
-concurrency: An integer value, e.g., 100.
-
-#Get Stored Metrics
-
-This endpoint retrieves a list of metrics within a specified time range, with support for pagination.
-
-#Endpoint: GET /metrics/{limit}/{offset}
-
-#Path Parameters:
-
-limit: An integer value to limit the number of metrics returned, e.g., 50.
-
-offset: An integer value to specify the starting point for the results, e.g., 0.
-
-#Input (Request Body):
-
+```json
 {
-    "start": <startTime>,
-    "end": <endTime>
+  "timestamp": 1722441990,
+  "cpu_load": 45.75,
+  "concurrency": 100
 }
+```
 
-start: The starting Unix timestamp of the desired range.
+---
 
-end: The ending Unix timestamp of the desired range.
+## 📤 Retrieve Stored Metrics
 
-#Output:
+### 🧭 Endpoint
+```
+GET /metrics/{limit}/{offset}
+```
 
+### 🔧 Parameters
+- `limit`: Max number of metrics to return (e.g., `50`)
+- `offset`: Starting point for retrieval (e.g., `0`)
+
+### 📨 Request Body
+```json
 {
-    "status": true,
-    "value": [
-        { "timestamp": 1722441990, "cpu_load": 45.75, "concurrency": 100 },
-        { "timestamp": 1722441991, "cpu_load": 46.10, "concurrency": 102 },
-        ...
-    ],
-    "error_code": 303000
+  "start": 1722441990,
+  "end": 1722442290
 }
+```
 
-#Development
+### 📦 Response Example
+```json
+{
+  "status": true,
+  "value": [
+    { "timestamp": 1722441990, "cpu_load": 45.75, "concurrency": 100 },
+    { "timestamp": 1722441991, "cpu_load": 46.10, "concurrency": 102 }
+  ],
+  "error_code": 303000
+}
+```
 
-The project is built using Go modules. The following make commands are available to assist with development and testing.
+---
 
-make run: Builds and runs the application.
+## 🛠️ Development & Testing
 
-make test: Executes all unit and integration tests with race detection and coverage reporting.
+This project uses **Go modules**. The following `make` commands streamline development and testing:
 
-make build: Compiles the application into a binary.
+| Command       | Description                                           |
+|---------------|-------------------------------------------------------|
+| `make run`    | Builds and runs the application                      |
+| `make test`   | Executes unit & integration tests with coverage      |
+| `make build`  | Compiles the app into a binary                       |
+| `make clean`  | Removes build artifacts                              |
+| `make all`    | Runs `clean`, `test`, `build`, then `run` in order   |
+| `make`        | Default command, equivalent to `make all`            |
 
-make clean: Removes the build artifacts.
-
-make all: Runs clean, test, build and then run in sequence.
-
-make: The default command is make all.
-
-You can also run tests directly using the following command:
-
+### ✅ Run Tests Manually
+```bash
 go test -race -cover -coverprofile=coverage.txt -covermode=atomic ./...
+```
